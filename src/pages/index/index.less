@@ -1,0 +1,37 @@
+.page{
+  height: 100vh;
+  background-color: #fff;
+}
+.bg{
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40%;
+  width: 100%;
+  opacity: 0.4;
+  z-index: 0;
+}
+.body{
+  position: relative;
+  z-index: 1;
+}
+.bg-animation {
+  filter: blur(69px);
+  will-change: transform;
+  background: linear-gradient( 135deg, #722ED1 0%, #1677ff 30%, #F5222D 70%, #13C2C2 100% );
+  background-size: 200% 200%;
+  animation: glow 10s ease infinite;
+}
+
+@keyframes glow{
+  0%{
+    background-position:0 -100%;
+  }
+  50%{
+    background-position:200% 50%;
+  }
+  100%{
+    background-position:0 -100%;
+  }
+}

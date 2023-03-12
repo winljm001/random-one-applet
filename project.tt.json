@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "./",
   "projectname": "random-tea-applet",
-  "appid": "testAppId",
+  "appid": "wx94a82c00fc3cf6ab",
   "setting": {
     "es6": false,
     "minified": false
