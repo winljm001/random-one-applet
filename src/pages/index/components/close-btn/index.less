@@ -1,0 +1,21 @@
+.close-btn{
+  position: relative;
+  width: 64px;
+  height: 64px;
+  .span{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 12px;
+    width: 64px;
+    background-color: #333;
+    transform-origin: center center;
+    &:nth-child(1){
+      transform:rotateZ(45deg);
+    }
+    
+    &:nth-child(2){
+      transform:rotateZ(-45deg);
+    }
+  }
+}
