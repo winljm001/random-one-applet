@@ -31,8 +31,10 @@ export default class Index extends Component {
           types: initTypes,
           editType: "",
           activeIndex: 0,
-          editTypeIndex: 0,
           addText: "",
+          loading: false,
+          shareModal: false,
+          randomTarget: -1,
         };
       }
     } catch (e) {
@@ -114,7 +116,62 @@ export default class Index extends Component {
       }),
     });
   };
+
+  randomAction = () => {
+    this.setState({
+      loading: true,
+    });
+    const callback = () => {
+      const randomTarget = Math.floor(
+        Math.random() *
+          this.state?.types?.[this.state?.activeIndex]?.list.length
+      );
+
+      this.setState({
+        randomTarget: randomTarget,
+        loading: false,
+        shareModal: true,
+        types: this.state?.types?.map((v, i) => {
+          if (this.state?.activeIndex === i) {
+            return {
+              ...v,
+              list: v?.list?.map((item, j) => {
+                if (j === randomTarget) {
+                  console.log({ item });
+
+                  return { ...item, count: (item?.count || 0) + 1 };
+                } else {
+                  return item;
+                }
+              }),
+            };
+          } else {
+            return v;
+          }
+        }),
+      });
+    };
+    let randomNum = 15;
+    let interval = setInterval(() => {
+      randomNum--;
+      if (randomNum === 0) {
+        clearInterval(interval);
+        callback();
+        return false;
+      }
+      this.setState({
+        randomTarget: Math.floor(
+          Math.random() *
+            this.state?.types?.[this.state?.activeIndex]?.list.length
+        ),
+      });
+    }, 100);
+  };
   render() {
+    const shareItem =
+      this.state?.types?.[this.state?.activeIndex]?.list?.[
+        this.state?.randomTarget
+      ];
     return (
       <View className="page">
         {/* <View className="bg">
@@ -160,12 +217,7 @@ export default class Index extends Component {
               {this.state?.types?.[this.state?.activeIndex]?.list?.map(
                 (v, i) => {
                   return (
-                    <Tag
-                      key={i}
-                      // onClick={() => {
-                      //   this.setState({ activeIndex: i });
-                      // }}
-                    >
+                    <Tag key={i} active={i === this.state.randomTarget}>
                       {v?.name}
                     </Tag>
                   );
@@ -185,7 +237,9 @@ export default class Index extends Component {
           </View>
           {/* <Card name="sss" counts={8} /> */}
           <View className="bottom-bar">
-            <View className="nes-btn is-primary">随便一下</View>
+            <View className="nes-btn is-primary" onClick={this.randomAction}>
+              随便一下
+            </View>
           </View>
         </View>
         <Modal
@@ -267,14 +321,24 @@ export default class Index extends Component {
                   if (this.state.editType === "item") {
                     this.addItem();
                   }
-                  // this.setState({
-                  //   editType: "type",
-                  // });
                 }}
               />
             </View>
           </View>
         </Modal>
+        {/* 分享 */}
+        <Modal
+          visible={this.state?.shareModal}
+          onClose={() => {
+            this.setState({ shareModal: false });
+          }}
+        >
+          <View className="share-box">
+            <View className="share-name">{shareItem?.name}</View>
+            <View className="share-count">次数：{shareItem?.count}</View>
+          </View>
+        </Modal>
+        {this.state?.loading && <View className="transparent-mask" />}
       </View>
     );
   }
