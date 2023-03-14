@@ -1,6 +1,6 @@
 .card{
   width: 65vw;
-  height: 65vh;
+  height: 55vh;
   background: #fff;
   padding: 24px;
   display: flex;
@@ -10,6 +10,7 @@
   font-size: 108px;
   color: #333;
   box-shadow:8px 8px #ddd;
+  position: relative;
   // text-shadow:
   //     0 0 7px #fff,
   //     0 0 10px #fff,
@@ -19,13 +20,14 @@
   //     0 0 92px rgb(255, 113, 84),
   //     0 0 102px rgb(255, 113, 84),
   //     0 0 151px rgb(255, 113, 84);
-  &.fixed{
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%) translateX(-50%);
-    left: 50%;
-  }
+  // &.fixed{
+  //   position: fixed;
+  //   top: 10%;
+  //   transform:translateX(-50%);
+  //   left: 50%;
+  // }
   .counts{
     font-size: 56px;
+    margin-top: 24px;
   }
 }

@@ -2,7 +2,9 @@ import { Component } from "react";
 import { View } from "@tarojs/components";
 import "./index.less";
 
-type propsType = {};
+type propsType = {
+  onClick?: () => void;
+};
 interface CloseBtn {
   props: propsType;
 }
@@ -19,7 +21,7 @@ class CloseBtn extends Component {
 
   render() {
     return (
-      <View className="close-btn">
+      <View className="close-btn" onClick={this.props?.onClick}>
         <View className="span" />
         <View className="span" />
       </View>

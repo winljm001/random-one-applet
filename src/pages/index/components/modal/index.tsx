@@ -4,8 +4,9 @@ import "./index.less";
 import CloseBtn from "../close-btn";
 
 type propsType = {
-  name: string;
-  counts?: number;
+  visible: boolean;
+  children: React.ReactNode;
+  onClose?: () => void;
 };
 interface Index {
   props: propsType;
@@ -22,14 +23,17 @@ class Index extends Component {
   componentDidHide() {}
 
   render() {
+    if (!this.props.visible) {
+      return null;
+    }
     return (
-      <View className="card fixed">
-        {/* <CloseBtn /> */}
-        <Text>{this.props.name}</Text>
-        {this.props.counts ? (
-          <Text className="counts">次数:{this.props.counts}</Text>
-        ) : null}
-      </View>
+      <>
+        <View className="mask" onClick={this.props?.onClose} />
+        <View className="modal">
+          <CloseBtn onClick={this.props?.onClose} />
+          {this.props.children}
+        </View>
+      </>
     );
   }
 }
