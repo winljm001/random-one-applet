@@ -1,7 +1,6 @@
 import { Component } from "react";
 import { View, Text, Image, Input } from "@tarojs/components";
 import "./index.less";
-import Card from "./components/card";
 import createIcon from "./images/lamb-create.png";
 
 import removeIcon from "./images/lamb-remove.png";
@@ -26,7 +25,6 @@ export default class Index extends Component {
           ...v,
           edit: false,
         }));
-        console.log({ initTypes });
         this.state = {
           types: initTypes,
           editType: "",
@@ -44,14 +42,35 @@ export default class Index extends Component {
     }
   }
   componentWillMount() {}
-
-  componentDidMount() {}
+  shouldComponentUpdate(_, nextState): boolean {
+    const { types } = nextState;
+    if (types?.length > 0) {
+      this.saveTypes(types);
+    }
+    return true;
+  }
 
   componentWillUnmount() {}
 
   componentDidShow() {}
 
   componentDidHide() {}
+
+  saveTypes = (types) => {
+    try {
+      const resTypes = types?.map((v) => {
+        return {
+          name: v?.name,
+          list: v?.list?.map((item) => {
+            return { name: item?.name, count: item?.count };
+          }),
+        };
+      });
+
+      Taro.setStorageSync("types", JSON.stringify(resTypes || []));
+    } catch (e) {}
+  };
+
   addType = () => {
     if (this.state.addText.trim() === "") {
       return false;
