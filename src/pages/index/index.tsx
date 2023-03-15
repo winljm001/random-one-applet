@@ -110,7 +110,6 @@ export default class Index extends Component {
         ?.map((v) => v?.name)
         ?.join(",");
       const target = shareItem?.name;
-      const shareQueryStr = qs.stringify({ name, list, target });
       return {
         title: `随机-${shareItem?.name}(${shareItem?.count}次)`,
         path: `/pages/index/index?name=${name}&list=${list}&target=${target}`,
@@ -258,10 +257,8 @@ export default class Index extends Component {
   };
 
   render() {
-    const shareItem =
-      this.state?.types?.[this.state?.activeIndex]?.list?.[
-        this.state?.randomTarget
-      ];
+    const shareType = this.state?.types?.[this.state?.activeIndex];
+    const shareItem = shareType?.list?.[this.state?.randomTarget];
     return (
       <View className="page">
         {/* <View className="bg">
@@ -424,6 +421,7 @@ export default class Index extends Component {
           }}
         >
           <View className="share-box">
+            <View className="share-title">随便的{shareType?.name}为</View>
             <View className="share-name">{shareItem?.name}</View>
             <View className="share-count">次数：{shareItem?.count}</View>
             <View className="btn-group">
