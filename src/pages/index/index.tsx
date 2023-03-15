@@ -1,8 +1,8 @@
 import { Component } from "react";
-import { View, Text, Image, Input } from "@tarojs/components";
+import { View, Text, Image, Input, Button } from "@tarojs/components";
 import "./index.less";
 import createIcon from "./images/lamb-create.png";
-
+import qs from "qs";
 import removeIcon from "./images/lamb-remove.png";
 import editIcon from "./images/bianji.png";
 
@@ -10,6 +10,7 @@ import Tag from "./components/tag";
 import Taro from "@tarojs/taro";
 import { defaultRandomList } from "./const";
 import Modal from "./components/modal";
+import intersectionBy from "lodash/intersectionBy";
 
 export default class Index extends Component {
   constructor(props) {
@@ -51,21 +52,90 @@ export default class Index extends Component {
   }
 
   componentWillUnmount() {}
+  onLoad(options) {
+    console.log({ options });
+    const callback = () => {
+      const activeIndex = this.state?.types?.findIndex(
+        (v) => v?.name === options?.name
+      );
+      const randomTarget = this.state?.types?.[activeIndex]?.list?.findIndex(
+        (v) => v?.name === options?.target
+      );
+      this.setState({ activeIndex, randomTarget, shareModal: true });
+    };
+    if (options?.target) {
+      const list = options?.list
+        ?.split(",")
+        ?.map((v) => ({ name: v, count: 0 }));
+
+      if (this.state?.types?.find((v) => v?.name === options?.name)) {
+        this.setState(
+          {
+            types: this.state?.types?.map((v) => {
+              if (v?.name === options?.name) {
+                return {
+                  ...v,
+                  list: intersectionBy(v?.list, list, "name"),
+                };
+              } else {
+                return v;
+              }
+            }),
+          },
+          callback
+        );
+      } else {
+        this.setState(
+          {
+            types: [...this.state?.types, { name: options?.name, list }],
+          },
+          callback
+        );
+      }
+    }
+  }
 
   componentDidShow() {}
 
   componentDidHide() {}
+  onShareAppMessage() {
+    const shareItem =
+      this.state?.types?.[this.state?.activeIndex]?.list?.[
+        this.state?.randomTarget
+      ];
 
+    if (shareItem?.name) {
+      const name = this.state?.types?.[this.state?.activeIndex]?.name;
+      const list = this.state?.types?.[this.state?.activeIndex]?.list
+        ?.map((v) => v?.name)
+        ?.join(",");
+      const target = shareItem?.name;
+      const shareQueryStr = qs.stringify({ name, list, target });
+      return {
+        title: `随机-${shareItem?.name}(${shareItem?.count}次)`,
+        path: `/pages/index/index?name=${name}&list=${list}&target=${target}`,
+      };
+    } else {
+      return {
+        title: `随机一杯`,
+        path: `/pages/index/index`,
+      };
+    }
+  }
+  getSimpleList = (types) => {
+    const resTypes = types?.map((v) => {
+      return {
+        name: v?.name,
+        list: v?.list?.map((item) => {
+          return { name: item?.name, count: item?.count };
+        }),
+      };
+    });
+    return resTypes;
+  };
   saveTypes = (types) => {
     try {
-      const resTypes = types?.map((v) => {
-        return {
-          name: v?.name,
-          list: v?.list?.map((item) => {
-            return { name: item?.name, count: item?.count };
-          }),
-        };
-      });
+      const resTypes = this.getSimpleList(types);
 
       Taro.setStorageSync("types", JSON.stringify(resTypes || []));
     } catch (e) {}
@@ -186,6 +256,7 @@ export default class Index extends Component {
       });
     }, 100);
   };
+
   render() {
     const shareItem =
       this.state?.types?.[this.state?.activeIndex]?.list?.[
@@ -355,6 +426,20 @@ export default class Index extends Component {
           <View className="share-box">
             <View className="share-name">{shareItem?.name}</View>
             <View className="share-count">次数：{shareItem?.count}</View>
+            <View className="btn-group">
+              <View
+                className="nes-btn is-primary"
+                onClick={() => {
+                  this.randomAction();
+                  this.setState({ shareModal: false });
+                }}
+              >
+                再来一次
+              </View>
+              <Button openType="share" className="nes-btn is-primary">
+                分享到群里
+              </Button>
+            </View>
           </View>
         </Modal>
         {this.state?.loading && <View className="transparent-mask" />}
